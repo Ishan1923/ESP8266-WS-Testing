@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>esp8226-response</title>
+    <link rel="stylesheet" href="{% static 'style.css'%}">
+    <script>
+        let websocket = new WebSocket("ws://localhost:8000/ws/sensor-data");
+
+        websocket.onopen() = fucntion(){
+            console.Log("WS connection established.");
+        };
+
+        websocket.onmessage() = function(event){
+            console.log("Recieved from ws: ", event);
+
+            try{
+                let response = JSON.parse(event.data);
+                if (response && response.text !== undefined){
+                    document.getElementById('latest-entry').innerHTML = response.text;
+                }
+                else{
+                    console.warn("Unexpected data format");
+                }
+
+            }
+            catch(error){
+                console.error("error parsing ws data: ", error);
+            }
+
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed");
+        };
+    </script>
+</head>
+<body>
+    <div class = "content">
+        <div>
+            <h1 id = "latest-entry">
+                {% if latest_log %}
+                    {% comment %} {% with = latest_log.text|safe as data %} {% endcomment %}
+                        {{latest_log.text}}
+                    {% comment %} {% endwith %} {% endcomment %}
+                {% else %}
+                    Waiting For data...
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+</body>
+</html>
