@@ -1,0 +1,36 @@
+.content{
+    display: flex;
+    border: 23px dotted rgb(96, 139, 169);
+    border-radius: 23px;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 23px;
+
+    font-family: 'Courier New', Courier, monospace;
+    font: 800;
+    color: white;
+    font-size: 2rem;
+
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+}
+
+#latest-entry{
+    text-align: center;
+    margin: 0;
+    width: 100%;
+    height: auto;
+}
+
+#latest-entry :hover{
+    color: rgb(120, 128, 128);
+}
