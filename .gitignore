@@ -3,3 +3,6 @@
 vercel.json
 .yaml
 .json
+.env.development.local
+.sqlite3
+.png
