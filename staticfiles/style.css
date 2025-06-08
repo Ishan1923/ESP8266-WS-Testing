@@ -1,36 +1,245 @@
-.content{
-    display: flex;
-    border: 23px dotted rgb(96, 139, 169);
-    border-radius: 23px;
+        /*
+        body {
+            background-color: rgb(20, 20, 25);
+            margin: 0;
+            height: 100vh;
+        }
 
-    justify-content: center;
-    align-items: center;
+        #navbar{
+            position: relative;
+            width: 100%;
+            height: 10vh;
+            background-color: rgba(18, 18, 35, 0.42);
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.7rem;
+            
+        }
 
-    padding: 23px;
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .part1, .part2 {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid white;
+            flex-direction: column;
+        }
+        .part1 {
+            width: 30%;
+        }
+        .part2 {
+            width: 70%;
+        }
+        .part3 {
+            height: 7%;
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: white;
+            border: 3px solid rgba(115, 115, 230, 0.42);
+            border-radius: 3px;
+            background-color: rgba(88, 88, 177, 0.42);
+            width: 100%;
+            text-align: center;
+        }
+        .part4 {
+            height: 93%;
+            width: 100%;
+            font-family: monospace;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.263);
+            
+        }
 
-    font-family: 'Courier New', Courier, monospace;
-    font: 800;
-    color: white;
-    font-size: 2rem;
-
-}
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
+        .part4 #current-data-box{
+            overflow-y: auto;
+            white-space: pre-wrap;
+            height: 200px;
+            padding:10px;
+            background-color: rgba(89, 153, 137, 0.59);
+            border: 4px solid rgba(128, 219, 196, 0.59);
+            border-radius: 5px;
+        }
+        .part4 .parameters{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            flex-wrap: wrap;
+            width: 100%;
+            
+        }
+        .part4 .parameters > *{
+            background-color: rgba(24, 62, 55, 0.777);
+            color: white;
+            border: 2px solid rgb(24, 62, 55);
+            border-radius: 23px;
+            margin: 20px;
+            height: 10%;
+            width: 15%;
+        }
+        .part4 .parameters > .parameter > .numerics{
+            padding: 10px;
+            font-size: 1.5rem;
+            font-family: monospace;
+        }
+        .part4 .parameters > .parameter > .text{
+            padding: 10px;
+            font-size: 0.5rem;
+            font-family: monospace;
+        }
+        */
+        body {
+    background-color: #141418;
+    margin: 0;
+    padding: 0;
     height: 100vh;
-    width: 100vw;
-    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    color: #f0f0f0;
 }
 
-#latest-entry{
-    text-align: center;
-    margin: 0;
+#navbar {
     width: 100%;
-    height: auto;
+    height: 10vh;
+    background-color: rgba(36, 37, 59, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 0px 0px 4px rgba(200, 200, 255, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-#latest-entry :hover{
-    color: rgb(120, 128, 128);
+.content {
+    display: flex;
+    flex-direction: row;
+    height: 90vh;
+    overflow: hidden;
+}
+
+.part1, .part2 {
+    height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(30, 30, 40, 0.8);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.part1 {
+    width: 30%;
+}
+
+.part2 {
+    width: 70%;
+    justify-content: center;
+    align-items: center;
+}
+
+.part3 {
+    height: 8%;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(90, 90, 170, 0.4);
+    border: 2px solid rgba(120, 120, 230, 0.4);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.part4 {
+    flex: 1;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden; /* prevents overflow from parameters */
+}
+
+
+#current-data-box {
+    overflow-y: auto;
+    background-color: rgba(90, 170, 160, 0.2);
+    border: 2px solid rgba(128, 219, 196, 0.4);
+    border-radius: 6px;
+    padding: 1rem;
+    height: 250px;
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: #f1f1f1;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+/* .parameters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+    max-height: 50vh; 
+    padding-right: 5px;
+}
+    */
+
+.parameters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.3rem;
+    overflow-y: auto;
+    max-height: 40vh;
+    padding-right: 5px;
+}
+
+.parameter {
+    background-color: rgba(36, 100, 90, 0.75);
+    border: 2px solid #316f5e;
+    border-radius: 12px;
+    padding: 0.8rem;
+    /* box-shadow: 0 0 8px rgba(20, 200, 180, 0.2); */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    min-height: 60px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.parameter .numerics {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.parameter .text {
+    font-size: 0.75rem;
+    color: #ddd;
+
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }

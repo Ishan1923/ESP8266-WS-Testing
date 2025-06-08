@@ -6,20 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>esp8226-response</title>
     <link rel="stylesheet" href="{% static 'style.css'%}">
-    <script>
-        let websocket = new WebSocket("ws://localhost:8000/ws/sensor-data");
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 
-        websocket.onopen() = fucntion(){
-            console.Log("WS connection established.");
+    <script>
+
+        let websocket = new WebSocket("ws://localhost:8000/ws/sensor-data/");
+        let data_log = [];
+        let chart = null;
+        websocket.onopen = function(){
+            console.log("WS connection established.");
+            websocket.send(JSON.stringify({
+                "command" : "get_chart_data"
+            }));
         };
 
-        websocket.onmessage() = function(event){
+        websocket.onmessage = function(event){
             console.log("Recieved from ws: ", event);
 
             try{
-                let response = JSON.parse(event.data);
+                let e_data = event.data;
+                let response = typeof e_data === "string" ? JSON.parse(e_data) : e_data;
+                console.log("Parsed response: ", response);
+                const readableText = typeof response.text === "string" ? response.text : JSON.stringify(response.text, null, 2);
+                console.log("Readable text: ", readableText);
+                if (response.command === "get_chart_data") {
+                    console.log("Received historical data for chart");
+                    if(!chart){
+                        initialzeChart();
+                    }
+                    updateChartWithHistoricalData(response.data);
+                    return; 
+                }
+
                 if (response && response.text !== undefined){
-                    document.getElementById('latest-entry').innerHTML = response.text;
+                    
+                    const timestamp = new Date(response.text.timestamp || Date.now());
+                    const XVal = response.text.data.x || 0;
+                    const YVal = response.text.data.y || 0;
+                    const ZVal = response.text.data.z || 0;
+                    //const responseData = JSON.parse(response.text); // parse inner string
+                    //const readableText = x: ${responseData.x}, y: ${responseData.y}, z: ${responseData.z};
+                    const readableText = JSON.stringify(response.text);
+                    let entry = `${timestamp} : ${readableText}`;
+                    data_log.push(entry);
+                    document.getElementById('latest-entry').innerHTML =readableText;
+                    let logbox = document.getElementById('current-data-box');
+                    logbox.innerHTML = data_log.join('<br>');
+                    logbox.scrollTop = logbox.scrollHeight;
+
+                    //let temp = {"timestamp" : timestamp, "x" : response.text.x || 0, "y" : response.text.y || 0, "z" : response.text.z || 0;
+
+                    //updateChartWithHistoricalData(temp);
+                    if (chart){
+                        chart.data.labels.push(timestamp);
+                        chart.data.datasets[0].data.push(XVal);
+                        chart.data.datasets[1].data.push(YVal);
+                        chart.data.datasets[2].data.push(ZVal);
+                    }
+
+                    chart.update();
                 }
                 else{
                     console.warn("Unexpected data format");
@@ -30,26 +76,152 @@
                 console.error("error parsing ws data: ", error);
             }
 
+            
+
         };
 
-        socket.onclose = function() {
+        websocket.onclose = function() {
             console.log("WebSocket connection closed");
         };
+
+        websocket.onerror = function(error) {
+            console.error("WebSocket error: ", error);
+        };
+
+
+
+        function initialzeChart(){
+            chart = new Chart(document.getElementById("chart"), {
+            type: "line",
+            data: {
+                labels: [],
+                datasets: [
+                {
+                    label: "X axis",
+                    data: [],
+                    borderColor: "rgba(75,192,192,1)",
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 1.5,
+                },
+                {
+                    label: "Y axis",
+                    data: [],
+                    borderColor: "rgb(75, 87, 192)",
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 1.5,
+                },
+                {
+                    label: "Z axis",
+                    data: [],
+                    borderColor: "rgb(192, 75, 98)",
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 1.5,
+                }
+
+                ]
+            },
+            options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: "time",
+                    time: {
+                        parser: 'HH:mm:ss',
+                        tooltipFormat: 'HH:mm:ss',
+                        unit: 'second',
+                        displayFormats: {
+                            second: 'HH:mm:ss'
+                        },
+                    },
+                    title: {
+                        display: true,
+                        text: 'Time',
+                        color: 'rgba(249, 243, 244, 0.68)'
+                    },
+                    grid: {
+                        color: 'rgba(249, 243, 244, 0.36)'
+                    },
+                    ticks: {
+                        color: 'rgba(249, 243, 244, 0.68)',
+                        beginAtZero: true,
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Sensor Value',
+                        color: 'rgba(249, 243, 244, 0.68)'
+                    },
+                    grid: {
+                        color: 'rgba(249, 243, 244, 0.36)'
+                    },
+                    ticks: {
+                        color: 'rgba(249, 243, 244, 0.68)',
+                        beginAtZero: true,
+                    }
+                }
+            }
+        }
+        });
+        }
+
+    function updateChartWithHistoricalData(data) {
+        chart.data.labels = data.map(d => new Date(d.timestamp));
+        chart.data.datasets[0].data = data.map(d => d.x || 0);
+        chart.data.datasets[1].data = data.map(d => d.y || 0);
+        chart.data.datasets[2].data = data.map(d => d.z || 0);
+        chart.update();
+    }
+        
+
     </script>
 </head>
 <body>
-    <div class = "content">
-        <div>
-            <h1 id = "latest-entry">
-                {% if latest_log %}
-                    {% comment %} {% with = latest_log.text|safe as data %} {% endcomment %}
-                        {{latest_log.text}}
-                    {% comment %} {% endwith %} {% endcomment %}
-                {% else %}
-                    Waiting For data...
-                {% endif %}
-            </h1>
+    <nav id = "navbar">
+        <div class="heading">MPU6050 PID response</div>
+    </nav>
+    <div class="content">
+        <div class="part1">
+            <strong style = "color: white; font-family: monospace; font-size: 1.5em">Data Log</strong>
+            <div class="part3">
+                <div id = "latest-entry">
+                    <center><em>latest-entry</em></center>
+                </div>
+            </div>
+            <div class="part4">
+                    <div id="current-data-box" ><center><em>current-data-box</em></center></div>
+
+                <div class="parameters">
+                    <div class = "parameter">
+                        <div class="text">torque</div>
+                        <div id = "torque-Val" class = "numerics">00.00</div>
+                    </div>
+                    <div class = "parameter">
+                        <div class="text">Kp</div>
+                        <div id = "Kp-Val" class = "numerics">00.00</div>
+                    </div>
+                    <div class = "parameter">
+                        <div class="text">Ki</div>
+                        <div id = "Ki-Val" class = "numerics">00.00</div>
+                    </div>
+                    <div class = "parameter">
+                        <div class="text">Kd</div>
+                        <div id = "Kd-Val" class = "numerics">00.00</div>
+                    </div>
+                        <div class="parameter">
+                        <div class="text">output</div>
+                        <div id = "output-Val" class = "numerics">00.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="part2">
+            <canvas id="chart" alt="chart"></canvas>
         </div>
     </div>
+    
 </body>
 </html>

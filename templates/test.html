@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Dashboard</title>
+    <style>
+        body {
+            background-color: rgb(20, 20, 25);
+            margin: 0;
+        }
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .part1, .part2 {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid white;
+            flex-direction: column;
+        }
+        .part1 {
+            width: 30%;
+        }
+        .part2 {
+            width: 70%;
+        }
+        .part3 {
+            height: 7%;
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: white;
+            border: 1px solid red;
+            padding: 4px;
+            background-color: rgba(88, 88, 177, 0.42);
+            width: 100%;
+            text-align: center;
+        }
+        .part4 {
+            height: 93%;
+            width: 100%;
+            background-color: rgba(89, 153, 137, 0.59);
+        }
+        .odometer-border {
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid white;
+            border-radius: 50%;
+            background-color: rgb(9, 47, 80);
+        }
+        .needle {
+            width: 2px;
+            height: 100px;
+            background-color: red;
+            position: absolute;
+            transform-origin: bottom center;
+            transition: transform 0.5s ease-in-out;
+        }
+        .nail{
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: -5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="part1">
+            <div class="part3">
+                <em>Current Data</em>
+            </div>
+            <div class="part4" id="current-data-box">
+                <div class="odometer-border">
+                    <div class="odometer">
+                        <div class="nail"></div>
+                        <div class="needle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="part2">
+            <canvas id="chart" alt="chart"></canvas>
+        </div>
+    </div>
+
+    <!-- ✅ JS libraries and script placed after HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // Timestamps
+                datasets: [{
+                    label: 'Sensor Data',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: { display: true, text: "Time" },
+                        ticks: { autoSkip: true, maxTicksLimit: 10 }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: "Value" }
+                    }
+                }
+            }
+        });
+
+        // Example: Real-time data pushing (you can connect to WebSocket here)
+        setInterval(() => {
+            const now = new Date().toLocaleTimeString();
+            const value = Math.random() * 10;
+
+            if (chart.data.labels.length > 20) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+
+            chart.data.labels.push(now);
+            chart.data.datasets[0].data.push(value);
+            chart.update();
+        }, 1000);
+    </script>
+</body>
+</html>
